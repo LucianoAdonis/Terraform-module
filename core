@@ -1,0 +1,21 @@
+provider "aws" {
+    access_key = "${var.AWS_ACCESS_KEY}"
+    secret_key = "${var.AWS_SECRET_KEY}"
+    region = "${var.AWS_REGION}"
+}
+
+resource "aws_instance" "example" {
+  ami = "${lookup(var.AMIS, var.AWS_REGION)}"
+  instance_type = "t2.micro"
+  key_name = "${var.AWS_PEM}"
+  security_groups = ["${file("${var.PATH_TO_SECURITY}")}"]
+  }
+
+resource "aws_eip" "ip" {
+  instance = "${aws_instance.example.id}"
+}
+
+data "aws_iam_role" "EC2" {
+  role_name = "${file("${var.PATH_TO_ROLE}")}"
+}
+
